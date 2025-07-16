@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jocelynn Jerome - Pastry Baker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      @font-face {
+        font-family: 'LucideIcons';
+        src: url(https://cdn.jsdelivr.net/npm/lucide-static@latest/font/Lucide.ttf) format('truetype');
+      }
+      .lucide {
+        font-family: 'LucideIcons';
+        font-size: 1.25rem; /* Adjust size as needed */
+        line-height: 1;
+      }
+      /* Basic animation for page transitions */
+      .page {
+        display: none; /* Hide pages by default */
+        animation: fadeIn 0.5s ease-in-out;
+      }
+      .page.active {
+        display: block; /* Show active page */
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      /* Custom scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #eab308; /* Tailwind yellow-500 */
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #ca8a04; /* Tailwind yellow-600 */
+      }
+      /* Styling for active nav link */
+       nav a.active-link {
+        @apply text-yellow-600 border-b-2 border-yellow-500 font-semibold;
+       }
+       nav a {
+         @apply transition duration-300 ease-in-out;
+       }
+       nav a:hover {
+         @apply text-yellow-600;
+       }
+       /* Button hover effect */
+        button {
+            @apply transition duration-300 ease-in-out transform hover:scale-105;
+        }
+
+    </style>
+    <script>
+        // Basic configuration for Tailwind (optional, using defaults)
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'], // Set Inter as default sans-serif font
+                    },
+                    colors: {
+                        cream: '#FFF8DC', // Cornsilk - a warm, baking-related color
+                        brown: {
+                            light: '#D2B48C', // Tan
+                            DEFAULT: '#8B4513', // SaddleBrown
+                            dark: '#5C2E14' // Darker brown
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-cream font-sans text-brown-dark antialiased">
+
+    <div class="container mx-auto px-4 py-8 max-w-6xl">
+
+        <header class="mb-12 text-center border-b-2 border-brown-light pb-6">
+            <h1 class="text-4xl md:text-5xl font-bold text-brown-dark mb-2 animate-fadeIn">Jocelynn Jerome</h1>
+            <p class="text-xl text-yellow-600 font-medium animate-fadeIn" style="animation-delay: 0.2s;">Pastry Baker</p>
+            <p class="text-sm text-gray-600 animate-fadeIn" style="animation-delay: 0.4s;">North Dartmouth, Massachusetts, United States</p>
+        </header>
+
+        <nav class="flex justify-center space-x-6 md:space-x-10 mb-12 pb-4 border-b border-brown-light">
+            <a href="#resume" class="nav-link text-lg text-brown hover:text-yellow-600 active-link" onclick="showPage('resume', this)">Resume</a>
+            <a href="#portfolio" class="nav-link text-lg text-brown hover:text-yellow-600" onclick="showPage('portfolio', this)">Portfolio</a>
+            <a href="#order" class="nav-link text-lg text-brown hover:text-yellow-600" onclick="showPage('order', this)">Place Order</a>
+        </nav>
+
+        <main>
+            <div id="resume" class="page active">
+                <section class="mb-10 bg-white p-6 rounded-lg shadow-md transition duration-300 hover:shadow-xl">
+                    <h2 class="text-2xl font-semibold text-brown-dark border-b border-yellow-500 pb-2 mb-4 flex items-center">
+                        <span class="lucide mr-2">&#xe9f3;</span> Summary
+                    </h2>
+                    <p class="text-gray-700 leading-relaxed">
+                        Baking has always been a passion of mine ever since I was a child, but beyond that it has been a form of communication that sometimes actions and words cannot express. I have worked in the food industry service for three years but have been baking since I was allowed to use an oven. Everyday I feel thankful for being given an opportunity to work in, and learn about this industry where science, attention to detail, art, and heart all meet.
+                    </p>
+                </section>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-10">
+                    <section class="bg-white p-6 rounded-lg shadow-md transition duration-300 hover:shadow-xl">
+                        <h2 class="text-2xl font-semibold text-brown-dark border-b border-yellow-500 pb-2 mb-4 flex items-center">
+                           <span class="lucide mr-2">&#xe99a;</span> Contact
+                        </h2>
+                        <ul class="space-y-2 text-gray-700">
+                            <li><a href="mailto:jocelynnjerome@gmail.com" class="hover:text-yellow-600 transition duration-200">jocelynnjerome@gmail.com</a></li>
+                            <li><a href="https://www.linkedin.com/in/jocelynnjerome" target="_blank" rel="noopener noreferrer" class="hover:text-yellow-600 transition duration-200">linkedin.com/in/jocelynnjerome</a></li>
+                        </ul>
+                    </section>
+
+                    <section class="bg-white p-6 rounded-lg shadow-md transition duration-300 hover:shadow-xl">
+                        <h2 class="text-2xl font-semibold text-brown-dark border-b border-yellow-500 pb-2 mb-4 flex items-center">
+                            <span class="lucide mr-2">&#xeb3f;</span> Top Skills
+                        </h2>
+                        <ul class="space-y-1">
+                            <li class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full inline-block mr-2 mb-2 text-sm font-medium">Baking</li>
+                            <li class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full inline-block mr-2 mb-2 text-sm font-medium">Teamwork</li>
+                            <li class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full inline-block mr-2 mb-2 text-sm font-medium">Bread</li>
+                        </ul>
+                    </section>
+
+                    <section class="bg-white p-6 rounded-lg shadow-md transition duration-300 hover:shadow-xl">
+                        <h2 class="text-2xl font-semibold text-brown-dark border-b border-yellow-500 pb-2 mb-4 flex items-center">
+                           <span class="lucide mr-2">&#xea33;</span> Certifications
+                        </h2>
+                        <ul class="space-y-2 text-gray-700">
+                            <li>Certified Bartender</li>
+                            <li>Learning Office 365</li>
+                        </ul>
+                    </section>
+                </div>
+
+                <section class="mb-10 bg-white p-6 rounded-lg shadow-md transition duration-300 hover:shadow-xl">
+                    <h2 class="text-2xl font-semibold text-brown-dark border-b border-yellow-500 pb-2 mb-6 flex items-center">
+                        <span class="lucide mr-2">&#xe91f;</span> Experience
+                    </h2>
+                    <div class="space-y-8">
+                        <div class="relative pl-8 border-l-2 border-yellow-300">
+                             <span class="absolute -left-3 top-0 w-5 h-5 bg-yellow-500 rounded-full border-4 border-white"></span>
+                             <h3 class="text-xl font-semibold text-brown">Production Baker</h3>
+                             <p class="text-md text-gray-600">Little Moss | Dartmouth, MA</p>
+                             <p class="text-sm text-gray-500 mb-2">May 2024 - Present</p>
+                             </div>
+                         <div class="relative pl-8 border-l-2 border-yellow-300">
+                             <span class="absolute -left-3 top-0 w-5 h-5 bg-yellow-500 rounded-full border-4 border-white"></span>
+                             <h3 class="text-xl font-semibold text-brown">Pastry Baker</h3>
+                             <p class="text-md text-gray-600">The Baker | New Bedford, MA</p>
+                             <p class="text-sm text-gray-500 mb-2">May 2023 - April 2024 (1 year)</p>
+                             <ul class="list-disc list-inside text-gray-700 space-y-1 text-sm">
+                                 <li>Produced daily breads including baguettes, lunch rolls such as pretzel and Italian buns, and sourdough loaves.</li>
+                                 <li>Used knowledge of yeasted doughs and their relation of time, temperature, and dough development, to adjust production schedules and get the best product.</li>
+                                 <li>Analyzed final products and assessed changes in production, ingredients, and procedures to yield better and consistent results.</li>
+                             </ul>
+                        </div>
+                         <div class="relative pl-8 border-l-2 border-yellow-300">
+                             <span class="absolute -left-3 top-0 w-5 h-5 bg-yellow-500 rounded-full border-4 border-white"></span>
+                             <h3 class="text-xl font-semibold text-brown">Bakery Intern</h3>
+                             <p class="text-md text-gray-600">The Baker | New Bedford, MA</p>
+                             <p class="text-sm text-gray-500 mb-2">November 2022 - May 2023 (7 months)</p>
+                             <ul class="list-disc list-inside text-gray-700 space-y-1 text-sm">
+                                <li>Scaled and mixed large scale recipes for breads, quick breads, and cookies.</li>
+                                <li>Shaped the doughs for different breads, various laminated product, and other pastry products such as poptarts, galettes, and baklava.</li>
+                                <li>Responsible for shaping, frying, and finishing 28-138 daily donuts.</li>
+                             </ul>
+                        </div>
+                        <div class="relative pl-8 border-l-2 border-yellow-300">
+                             <span class="absolute -left-3 top-0 w-5 h-5 bg-yellow-500 rounded-full border-4 border-white"></span>
+                             <h3 class="text-xl font-semibold text-brown">Garde Manger/Pastries</h3>
+                             <p class="text-md text-gray-600">Little Moss | Dartmouth, MA</p>
+                             <p class="text-sm text-gray-500 mb-2">December 2021 - December 2022 (1 year 1 month)</p>
+                             <ul class="list-disc list-inside text-gray-700 space-y-1 text-sm">
+                                <li>Responsible for appetizer and dessert service for covers ranging from 30-60 in slower seasons and 70-130 during peak summer season.</li>
+                                <li>Prepared and plated appetizers and desserts during dinner services and private events.</li>
+                                <li>Assisted in the designing and execution of a dessert menu, utilizing local and seasonal produce to make sorbets, ice creams, soft serves, and dessert menu items such as cakes, shortcakes, tarts, mille-feuille, and mousses.</li>
+                             </ul>
+                        </div>
+                         <div class="relative pl-8 border-l-2 border-yellow-300">
+                             <span class="absolute -left-3 top-0 w-5 h-5 bg-yellow-500 rounded-full border-4 border-white"></span>
+                             <h3 class="text-xl font-semibold text-brown">Bakery Intern</h3>
+                             <p class="text-md text-gray-600">Farm and Coast Market | South Dartmouth, MA</p>
+                             <p class="text-sm text-gray-500 mb-2">May 2021 - November 2021 (7 months)</p>
+                             <ul class="list-disc list-inside text-gray-700 space-y-1 text-sm">
+                                <li>Responsible for scaling recipes, mixing, baking, and decorating products sold in the bakery, such as cookies, cupcakes, cakes, pies, and muffins.</li>
+                                <li>Assisted in ordering and receiving deliveries from restaurant suppliers.</li>
+                                <li>Assisted and communicated with the various kitchen departments such as bakery, pizza, sandwiches, and deli salads during high volume operation hours.</li>
+                             </ul>
+                        </div>
+                        <div class="relative pl-8 border-l-2 border-yellow-300">
+                             <span class="absolute -left-3 top-0 w-5 h-5 bg-yellow-500 rounded-full border-4 border-white"></span>
+                             <h3 class="text-xl font-semibold text-brown">To-Go Specialist / Server</h3>
+                             <p class="text-md text-gray-600">Olive Garden | North Dartmouth, MA</p>
+                             <p class="text-sm text-gray-500 mb-2">April 2019 - June 2021 (2 years 3 months total)</p>
+                             </div>
+                         <div class="relative pl-8 border-l-2 border-yellow-300">
+                             <span class="absolute -left-3 top-0 w-5 h-5 bg-yellow-500 rounded-full border-4 border-white"></span>
+                             <h3 class="text-xl font-semibold text-brown">Dock Crew</h3>
+                             <p class="text-md text-gray-600">South Wharf Yacht Yard | South Dartmouth, MA</p>
+                             <p class="text-sm text-gray-500 mb-2">July 2019 - August 2020 (1 year 2 months)</p>
+                         </div>
+                         <div class="relative pl-8 border-l-2 border-yellow-300">
+                             <span class="absolute -left-3 top-0 w-5 h-5 bg-yellow-500 rounded-full border-4 border-white"></span>
+                             <h3 class="text-xl font-semibold text-brown">Learning Commons Assistant</h3>
+                             <p class="text-md text-gray-600">University of Massachusetts Dartmouth | North Dartmouth, MA</p>
+                             <p class="text-sm text-gray-500 mb-2">September 2019 - December 2019 (4 months)</p>
+                         </div>
+                         <div class="relative pl-8 border-l-2 border-yellow-300">
+                             <span class="absolute -left-3 top-0 w-5 h-5 bg-yellow-500 rounded-full border-4 border-white"></span>
+                             <h3 class="text-xl font-semibold text-brown">Crew Member</h3>
+                             <p class="text-md text-gray-600">The Wendy's Company | North Dartmouth, MA</p>
+                             <p class="text-sm text-gray-500 mb-2">June 2018 - May 2019 (1 year)</p>
+                         </div>
+                    </div>
+                </section>
+
+                <section class="bg-white p-6 rounded-lg shadow-md transition duration-300 hover:shadow-xl">
+                    <h2 class="text-2xl font-semibold text-brown-dark border-b border-yellow-500 pb-2 mb-6 flex items-center">
+                       <span class="lucide mr-2">&#xea4a;</span> Education
+                    </h2>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="text-xl font-semibold text-brown">Johnson & Wales University</h3>
+                            <p class="text-md text-gray-700">Bachelor of Science (BS), Baking and Pastry Arts</p>
+                            <p class="text-sm text-gray-500">August 2020 - May 2023</p>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-semibold text-brown">Dartmouth High School</h3>
+                            <p class="text-md text-gray-700">GED</p>
+                            <p class="text-sm text-gray-500">August 2015 - July 2019</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div id="portfolio" class="page">
+                 <section class="bg-white p-6 rounded-lg shadow-md transition duration-300 hover:shadow-xl">
+                    <h2 class="text-2xl font-semibold text-brown-dark border-b border-yellow-500 pb-2 mb-6 flex items-center">
+                        <span class="lucide mr-2">&#xe931;</span> Portfolio - Past Works
+                    </h2>
+                    <p class="text-gray-600 mb-8">A showcase of delicious creations. (Placeholder images)</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-cream rounded-lg overflow-hidden shadow-sm transition duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                            <img src="https://placehold.co/600x400/FFF8DC/8B4513?text=Artisan+Bread" alt="Artisan Bread" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/eeeeee/cccccc?text=Image+Not+Found'">
+                            <div class="p-4">
+                                <h3 class="font-semibold text-lg text-brown">Artisan Sourdough</h3>
+                                <p class="text-sm text-gray-600">Naturally leavened sourdough loaf with a crisp crust.</p>
+                            </div>
+                        </div>
+                        <div class="bg-cream rounded-lg overflow-hidden shadow-sm transition duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                            <img src="https://placehold.co/600x400/FFF8DC/8B4513?text=Laminated+Pastry" alt="Laminated Pastry" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/eeeeee/cccccc?text=Image+Not+Found'">
+                            <div class="p-4">
+                                <h3 class="font-semibold text-lg text-brown">Croissants</h3>
+                                <p class="text-sm text-gray-600">Flaky, buttery laminated dough perfection.</p>
+                            </div>
+                        </div>
+                        <div class="bg-cream rounded-lg overflow-hidden shadow-sm transition duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                            <img src="https://placehold.co/600x400/FFF8DC/8B4513?text=Decorated+Cake" alt="Decorated Cake" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/eeeeee/cccccc?text=Image+Not+Found'">
+                            <div class="p-4">
+                                <h3 class="font-semibold text-lg text-brown">Celebration Cake</h3>
+                                <p class="text-sm text-gray-600">Multi-layered cake with custom decoration.</p>
+                            </div>
+                        </div>
+                         <div class="bg-cream rounded-lg overflow-hidden shadow-sm transition duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                            <img src="https://placehold.co/600x400/FFF8DC/8B4513?text=Assorted+Cookies" alt="Assorted Cookies" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/eeeeee/cccccc?text=Image+Not+Found'">
+                            <div class="p-4">
+                                <h3 class="font-semibold text-lg text-brown">Cookie Assortment</h3>
+                                <p class="text-sm text-gray-600">A variety of classic and gourmet cookies.</p>
+                            </div>
+                        </div>
+                         <div class="bg-cream rounded-lg overflow-hidden shadow-sm transition duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                            <img src="https://placehold.co/600x400/FFF8DC/8B4513?text=Seasonal+Tart" alt="Seasonal Tart" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/eeeeee/cccccc?text=Image+Not+Found'">
+                            <div class="p-4">
+                                <h3 class="font-semibold text-lg text-brown">Fruit Galette</h3>
+                                <p class="text-sm text-gray-600">Rustic tart featuring seasonal fruits.</p>
+                            </div>
+                        </div>
+                         <div class="bg-cream rounded-lg overflow-hidden shadow-sm transition duration-300 hover:shadow-lg transform hover:-translate-y-1">
+                            <img src="https://placehold.co/600x400/FFF8DC/8B4513?text=Donuts" alt="Donuts" class="w-full h-48 object-cover" onerror="this.src='https://placehold.co/600x400/eeeeee/cccccc?text=Image+Not+Found'">
+                            <div class="p-4">
+                                <h3 class="font-semibold text-lg text-brown">Gourmet Donuts</h3>
+                                <p class="text-sm text-gray-600">Handcrafted donuts with unique glazes and toppings.</p>
+                            </div>
+                        </div>
+                    </div>
+                 </section>
+            </div>
+
+            <div id="order" class="page">
+                 <section class="bg-white p-6 rounded-lg shadow-md transition duration-300 hover:shadow-xl">
+                    <h2 class="text-2xl font-semibold text-brown-dark border-b border-yellow-500 pb-2 mb-6 flex items-center">
+                       <span class="lucide mr-2">&#xe9cb;</span> Place a Custom Order
+                    </h2>
+                    <p class="text-gray-600 mb-8">Interested in a custom baked good? Fill out the form below to start your inquiry. Please note this form is for inquiries only and does not process payments.</p>
+
+                    <form id="orderForm" class="space-y-6">
+                        <div>
+                            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Your Name <span class="text-red-500">*</span></label>
+                            <input type="text" id="name" name="name" required class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 transition duration-200">
+                        </div>
+
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Your Email <span class="text-red-500">*</span></label>
+                            <input type="email" id="email" name="email" required class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 transition duration-200">
+                        </div>
+
+                         <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Phone Number (Optional)</label>
+                            <input type="tel" id="phone" name="phone" class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 transition duration-200">
+                        </div>
+
+                        <div>
+                            <label for="item" class="block text-sm font-medium text-gray-700 mb-1">Desired Item(s) <span class="text-red-500">*</span></label>
+                            <input type="text" id="item" name="item" required placeholder="e.g., Birthday Cake, Dozen Croissants, Sourdough Loaf" class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 transition duration-200">
+                        </div>
+
+                        <div>
+                            <label for="quantity" class="block text-sm font-medium text-gray-700 mb-1">Quantity <span class="text-red-500">*</span></label>
+                            <input type="number" id="quantity" name="quantity" required min="1" value="1" class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 transition duration-200">
+                        </div>
+
+                         <div>
+                            <label for="event_date" class="block text-sm font-medium text-gray-700 mb-1">Date Needed By (Optional)</label>
+                            <input type="date" id="event_date" name="event_date" class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 transition duration-200">
+                        </div>
+
+                        <div>
+                            <label for="instructions" class="block text-sm font-medium text-gray-700 mb-1">Special Instructions / Details</label>
+                            <textarea id="instructions" name="instructions" rows="4" placeholder="e.g., Allergies, flavor preferences, decoration ideas, event theme..." class="w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-yellow-500 focus:border-yellow-500 transition duration-200"></textarea>
+                        </div>
+
+                        <div>
+                            <button type="submit" class="w-full md:w-auto inline-flex justify-center items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-yellow-500 hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                                <span class="lucide mr-2">&#xe9b4;</span> Submit Inquiry
+                            </button>
+                        </div>
+                    </form>
+                     <div id="formMessage" class="mt-6 p-4 rounded-md text-center" style="display: none;"></div>
+                 </section>
+            </div>
+        </main>
+
+        <footer class="mt-16 pt-8 border-t border-brown-light text-center text-gray-500 text-sm">
+            <p>&copy; <span id="currentYear"></span> Jocelynn Jerome. All rights reserved.</p>
+            <p>Website designed with <span class="lucide text-red-500 text-sm">&#xe92a;</span></p> </footer>
+
+    </div>
+
+    <script>
+        // --- Page Navigation ---
+        const pages = document.querySelectorAll('.page');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        function showPage(pageId, clickedLink) {
+            // Hide all pages
+            pages.forEach(page => {
+                page.classList.remove('active');
+            });
+
+            // Show the selected page
+            const activePage = document.getElementById(pageId);
+            if (activePage) {
+                activePage.classList.add('active');
+            }
+
+            // Update active state for nav links
+            navLinks.forEach(link => {
+                link.classList.remove('active-link');
+            });
+            if (clickedLink) {
+                clickedLink.classList.add('active-link');
+            }
+
+            // Scroll to top of page content smoothly
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Show the initial page based on URL hash or default to 'resume'
+        document.addEventListener('DOMContentLoaded', () => {
+            const hash = window.location.hash.substring(1);
+            const initialPageId = (hash === 'portfolio' || hash === 'order') ? hash : 'resume';
+            const initialLink = document.querySelector(`.nav-link[href="#${initialPageId}"]`);
+            showPage(initialPageId, initialLink);
+
+            // Set current year in footer
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+        });
+
+        // --- Order Form Handling ---
+        const orderForm = document.getElementById('orderForm');
+        const formMessage = document.getElementById('formMessage');
+
+        orderForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Prevent actual form submission
+
+            // Basic validation check (HTML5 required attribute handles most)
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const item = document.getElementById('item').value;
+            const quantity = document.getElementById('quantity').value;
+
+            if (name && email && item && quantity) {
+                // Simulate submission success
+                formMessage.textContent = 'Thank you for your inquiry! Jocelynn will get back to you soon.';
+                formMessage.className = 'mt-6 p-4 rounded-md text-center bg-green-100 text-green-800'; // Success style
+                formMessage.style.display = 'block';
+                orderForm.reset(); // Clear the form
+
+                 // Hide the message after a few seconds
+                setTimeout(() => {
+                    formMessage.style.display = 'none';
+                }, 5000);
+
+            } else {
+                 // Show error message (though HTML5 validation should prevent this)
+                formMessage.textContent = 'Please fill out all required fields.';
+                formMessage.className = 'mt-6 p-4 rounded-md text-center bg-red-100 text-red-800'; // Error style
+                formMessage.style.display = 'block';
+            }
+        });
+
+    </script>
+
+</body>
+</html>
