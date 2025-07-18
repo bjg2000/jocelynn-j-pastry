@@ -45,7 +45,7 @@ To get a local copy up and running for development or inspection, follow these s
 
 1.  **Clone the repository:**
     ```bash
-    git clone [https://github.com/bjg2000/jocelynn-j-pastry.git](https://github.com/bjg2000/jocelynn-j-pastry.git)
+    git clone https://github.com/bjg2000/jocelynn-j-pastry.git
     ```
 2.  **Navigate to the project directory:**
     ```bash
