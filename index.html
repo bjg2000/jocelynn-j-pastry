@@ -25,7 +25,7 @@
       }
       @keyframes fadeIn {
         from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }\
+        to { opacity: 1; transform: translateY(0); }
       }
       /* Custom scrollbar */
       ::-webkit-scrollbar {
@@ -291,6 +291,10 @@
         const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSmgA4UPrlSzpesMSaHZ8ZAhLyNCFa6crAifWR2krM65Zttb4Y_VFQRbue2Qbg4PXRSntYzfs0AlDBs/pub?output=csv'; 
 
         async function fetchMenu() {
+            // Check if menu has already been loaded to prevent multiple fetches
+            if (menuItemsContainer.childElementCount > 1) { // More than just the initial 'loading' p tag
+                return;
+            }
             menuItemsContainer.innerHTML = ''; // Clear previous content
             menuError.style.display = 'none'; // Hide any previous errors
             menuLoading.style.display = 'block'; // Show loading indicator
@@ -334,14 +338,27 @@
             if (lines.length === 0) return [];
 
             // Regex to split by comma, but not if the comma is inside double quotes
-            // It also handles cases where a field might contain escaped double quotes (e.g., "value with ""quote""")
             const csvSplitRegex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
 
-            const headers = lines[0].split(csvSplitRegex).map(header => header.trim().replace(/^"|"$/g, '')); // Remove quotes from headers
+            // Helper function to clean up each value
+            const cleanValue = (value) => {
+                let cleaned = value.trim();
+                // If the value is quoted, remove the outer quotes
+                if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+                    cleaned = cleaned.substring(1, cleaned.length - 1);
+                }
+                // Replace escaped double quotes ("") with a single double quote (")
+                return cleaned.replace(/""/g, '"');
+            };
+
+            const headers = lines[0].split(csvSplitRegex).map(cleanValue);
             const data = [];
 
             for (let i = 1; i < lines.length; i++) {
-                const values = lines[i].split(csvSplitRegex).map(value => value.trim().replace(/^"|"$/g, '')); // Remove quotes from values
+                // Skip empty lines
+                if (lines[i].trim() === '') continue;
+                
+                const values = lines[i].split(csvSplitRegex).map(cleanValue);
                 if (values.length === headers.length) {
                     let item = {};
                     headers.forEach((header, index) => {
