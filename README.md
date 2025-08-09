@@ -17,12 +17,14 @@ The Jocelynn J. Pastry website is a static site designed to provide visitors wit
 
 ## Features
 
-* **Professional Portfolio:** Showcases a variety of Jocelynn's past pastry works, including artisan sourdough, croissants, celebration cakes, and gourmet donuts.
+* **Professional Portfolio:** Showcases a variety of Jocelynn's past pastry works, including artisan sourdough, croissants, celebration cakes, gourmet donuts, and more. All portfolio images are stored in the `assets` folder and loaded dynamically.
 * **About Section:** Detailed biography of Jocelynn Jerome, highlighting her passion, experience, skills (Baking, Teamwork, Bread), and certifications.
 * **Work Experience:** Comprehensive listing of Jocelynn's professional roles in the food service industry, from Production Baker to Bakery Intern.
 * **Education:** Information on her academic background, including her Bachelor of Science in Baking and Pastry Arts from Johnson & Wales University.
 * **Contact Information:** Direct contact details for business inquiries.
-* **Custom Order Request Form:** A functional form allowing users to submit inquiries for custom pastry orders, including desired items, quantity, and date needed. This form securely captures data without requiring a backend server for the website itself.
+* **Custom Order Request Form:** A functional form embedded directly from Google Forms, allowing users to submit inquiries for custom pastry orders, including desired items, quantity, and date needed. This form securely captures data without requiring a backend server for the website itself.
+* **Dynamic Menu:** The "Menu" section displays current offerings, loaded dynamically from a Google Sheet (CSV) using client-side JavaScript.
+* **Tabbed Navigation:** The site features tabbed navigation (Order, Menu, Showcase) with smooth page transitions and custom animations powered by JavaScript and Tailwind CSS.
 
 ## Live Website
 
@@ -34,8 +36,9 @@ You can view the live website here:
 The website is built using standard web technologies suitable for static site hosting:
 
 * **HTML5:** For the structure and content of the web pages.
-* **CSS3:** For styling and layout.
-* **JavaScript:** For any client-side interactivity (minimal, as dynamic features are offloaded).
+* **Tailwind CSS:** For modern, utility-first styling and layout, including custom animations and transitions.
+* **CSS3:** For additional custom styles.
+* **JavaScript:** For client-side interactivity, including tabbed navigation, page transitions, and dynamic menu loading from Google Sheets.
 * **GitHub Pages:** For hosting the static website.
 * **Google Forms:** Used as a secure and free backend solution for handling custom order submissions.
 
