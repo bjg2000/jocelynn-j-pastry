@@ -96,21 +96,68 @@
         </nav>
 
         <main>
-            <!-- Place Order Section - Now the default active page -->
+            <!-- Place Order Section - Now with Firebase Form -->
             <div id="order" class="page active">
                  <section class="mb-10 bg-white p-6 rounded-lg shadow-md transition duration-300 hover:shadow-xl">
                     <h2 class="text-2xl font-semibold text-brown-dark border-b border-yellow-500 pb-2 mb-6 flex items-center">
                        <span class="mr-2 text-2xl">🛒</span> Place a Custom Order
                     </h2>
-                    <p class="text-gray-600 mb-8">Interested in a custom baked good? Fill out the form below to start your inquiry. Please note this form is for inquiries only and does not process payments.</p>
+                    <p class="text-gray-600 mb-8">Interested in a custom baked good? Fill out the form below to start your inquiry. I'll get back to you as soon as possible!</p>
+                    
+                    <!-- New Order Form -->
+                    <form id="order-form" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                                <input type="text" id="name" name="name" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm">
+                            </div>
+                            <div>
+                                <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                                <input type="email" id="email" name="email" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                             <div>
+                                <label for="date" class="block text-sm font-medium text-gray-700">Date Needed</label>
+                                <input type="date" id="date" name="date" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm">
+                            </div>
+                            <div>
+                                <label for="item_type" class="block text-sm font-medium text-gray-700">Type of Baked Good</label>
+                                <select id="item_type" name="item_type" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm">
+                                    <option>Cake</option>
+                                    <option>Cupcakes</option>
+                                    <option>Cookies</option>
+                                    <option>Pastries</option>
+                                    <option>Bread</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
+                            <input type="text" id="quantity" name="quantity" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm" placeholder="e.g., 1 dozen, 1 cake, etc.">
+                        </div>
+                        <div>
+                            <label for="details" class="block text-sm font-medium text-gray-700">Order Details</label>
+                            <textarea id="details" name="details" rows="4" required class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-yellow-500 focus:border-yellow-500 sm:text-sm"></textarea>
+                            <p class="mt-2 text-xs text-gray-500">Please describe what you'd like to order, including flavors, and any special requests (e.g., allergies, decorations).</p>
+                        </div>
+                        <div>
+                            <button type="submit" id="submit-order-btn" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-yellow-600 hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-yellow-500">
+                                Submit Inquiry
+                            </button>
+                        </div>
+                    </form>
+                    <!-- End New Order Form -->
 
-                    <!-- Google Forms Embed -->
-                    <!-- Using min-height and overflow-y: auto for better dynamic scrolling -->
-                    <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSfC5lqYJPG6-eKIggyPOudJMtxet9JLq-07sYiwatS13_yImw/viewform?embedded=true" 
-                            width="100%" 
-                            style="min-height: 1400px; border: none; display: block; overflow-y: auto;" 
-                            frameborder="0" marginheight="0" marginwidth="0">Loading…</iframe>
-                    <!-- End Google Forms Embed -->
+                    <!-- Success and Error Messages -->
+                    <div id="form-success" class="hidden mt-6 p-4 rounded-md bg-green-100 text-green-800 text-center">
+                        Thank you for your inquiry! I'll be in touch soon.
+                    </div>
+                     <div id="form-error" class="hidden mt-6 p-4 rounded-md bg-red-100 text-red-800 text-center">
+                        Something went wrong. Please try again later.
+                    </div>
+
                  </section>
             </div>
 
@@ -233,6 +280,81 @@
             <p>Website designed by Bryce Getchell</p> </footer>
 
     </div>
+    
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Your web app's Firebase configuration
+        // IMPORTANT: This object is safe to be public. Security is handled by Firestore Security Rules.
+        const firebaseConfig = {
+            apiKey: "AIzaSyCnfaB5HidIIlSpOTZWLnkPnH2zKox5FKE",
+            authDomain: "pastry-palette.firebaseapp.com",
+            projectId: "pastry-palette",
+            storageBucket: "pastry-palette.appspot.com", // Corrected storage bucket
+            messagingSenderId: "665352557953",
+            appId: "1:665352557953:web:163949c7fa6d37178d8480"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // --- Order Form Submission ---
+        const orderForm = document.getElementById('order-form');
+        const submitButton = document.getElementById('submit-order-btn');
+        const formSuccess = document.getElementById('form-success');
+        const formError = document.getElementById('form-error');
+
+        // Set the minimum date for the date picker to today
+        const dateInput = document.getElementById('date');
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.setAttribute('min', today);
+
+
+        orderForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent default form submission
+
+            // Disable button and show loading state
+            submitButton.disabled = true;
+            submitButton.textContent = 'Submitting...';
+            formSuccess.classList.add('hidden');
+            formError.classList.add('hidden');
+
+            // Get form data
+            const formData = {
+                name: orderForm.name.value,
+                email: orderForm.email.value,
+                dateNeeded: orderForm.date.value,
+                itemType: orderForm.item_type.value,
+                quantity: orderForm.quantity.value,
+                details: orderForm.details.value,
+                submittedAt: serverTimestamp() // Add a timestamp
+            };
+
+            try {
+                // Add a new document with a generated ID to the "orders" collection
+                const docRef = await addDoc(collection(db, "orders"), formData);
+                console.log("Document written with ID: ", docRef.id);
+
+                // Show success message
+                formSuccess.classList.remove('hidden');
+                orderForm.reset(); // Clear the form
+                dateInput.setAttribute('min', today); // Reset min date after form reset
+
+            } catch (error) {
+                console.error("Error adding document: ", error);
+                // Show error message
+                formError.classList.remove('hidden');
+            } finally {
+                // Re-enable button
+                submitButton.disabled = false;
+                submitButton.textContent = 'Submit Inquiry';
+            }
+        });
+    </script>
 
     <script>
         // --- Page Navigation ---
