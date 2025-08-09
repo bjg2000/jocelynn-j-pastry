@@ -261,93 +261,110 @@
 
             // If the menu page is being shown, trigger menu loading
             if (pageId === 'menu') {
-                fetchMenu();
+                fetchAndDisplayMenu();
             }
 
             // Scroll to top of page content smoothly
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        // Show the initial page based on URL hash or default to 'order'
-        document.addEventListener('DOMContentLoaded', () => {
-            const hash = window.location.hash.substring(1);
-            // Default to 'order' page if no valid hash is present
-            const initialPageId = (hash === 'menu' || hash === 'showcase') ? hash : 'order';
-            const initialLink = document.querySelector(`.nav-link[href="#${initialPageId}"]`);
-            showPage(initialPageId, initialLink);
-
-            // Set current year in footer
-            document.getElementById('currentYear').textContent = new Date().getFullYear();
-        });
-
         // --- Dynamic Menu Loading from Google Sheet ---
+        let menuCache = null; // Global cache for the menu data
+
         const menuItemsContainer = document.getElementById('menu-items-container');
         const menuLoading = document.getElementById('menu-loading');
         const menuError = document.getElementById('menu-error');
-
-        // IMPORTANT: This URL is for your Google Sheet published as CSV.
-        // You MUST publish your Google Sheet (from the provided Drive link) to the web as CSV for this to work.
-        // Go to File > Share > Publish to web > Select Sheet > Select Comma-separated values (.csv) > Publish.
         const GOOGLE_SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSmgA4UPrlSzpesMSaHZ8ZAhLyNCFa6crAifWR2krM65Zttb4Y_VFQRbue2Qbg4PXRSntYzfs0AlDBs/pub?output=csv'; 
 
-        async function fetchMenu() {
-            // Check if menu has already been loaded to prevent multiple fetches
-            if (menuItemsContainer.childElementCount > 1) { // More than just the initial 'loading' p tag
+        // This function prefetches data in the background without affecting the UI
+        async function prefetchMenu() {
+            if (menuCache) return; // Don't fetch if already cached
+            try {
+                const response = await fetch(GOOGLE_SHEET_CSV_URL);
+                if (!response.ok) return; // Fail silently, main fetch will handle error
+                const csvText = await response.text();
+                menuCache = parseCSV(csvText); // Store parsed data in the cache
+                console.log("Menu data has been prefetched.");
+            } catch (error) {
+                console.error("Error prefetching menu data:", error); // Log prefetch error
+            }
+        }
+
+        // This function is called when the user clicks the "Menu" tab
+        async function fetchAndDisplayMenu() {
+            // If data is in the cache, display it immediately
+            if (menuCache) {
+                displayMenu(menuCache);
                 return;
             }
-            menuItemsContainer.innerHTML = ''; // Clear previous content
-            menuError.style.display = 'none'; // Hide any previous errors
-            menuLoading.style.display = 'block'; // Show loading indicator
+
+            // If no cached data, show loading and fetch it now
+            menuItemsContainer.innerHTML = '';
+            menuError.style.display = 'none';
+            menuLoading.style.display = 'block';
 
             try {
                 const response = await fetch(GOOGLE_SHEET_CSV_URL);
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
                 const csvText = await response.text();
-                const menuItems = parseCSV(csvText); // Parse the CSV data
-
-                if (menuItems.length > 0) {
-                    menuItemsContainer.innerHTML = ''; // Clear "Loading menu..." text
-                    menuItems.forEach(item => {
-                        const itemDiv = document.createElement('div');
-                        itemDiv.className = 'bg-yellow-50 p-4 rounded-md shadow-sm'; // Tailwind styling for menu item
-                        itemDiv.innerHTML = `
-                            <h3 class="text-xl font-semibold text-brown mb-1">${item['Product Name']}</h3>
-                            <p class="text-lg text-yellow-700 font-medium mb-2">${item['Price']}</p>
-                            <p class="text-gray-700">${item['Description']}</p>
-                        `;
-                        menuItemsContainer.appendChild(itemDiv);
-                    });
-                } else {
-                    menuItemsContainer.innerHTML = '<p class="text-center text-gray-500">No menu items found.</p>';
-                }
-
+                const menuItems = parseCSV(csvText);
+                menuCache = menuItems; // Cache the data for next time
+                displayMenu(menuItems);
             } catch (error) {
                 console.error("Error fetching menu:", error);
-                menuError.style.display = 'block'; // Show error message
-                menuItemsContainer.innerHTML = ''; // Clear loading text
+                menuError.style.display = 'block';
+                menuItemsContainer.innerHTML = '';
             } finally {
-                menuLoading.style.display = 'none'; // Hide loading indicator
+                menuLoading.style.display = 'none';
             }
         }
+        
+        // New function just for displaying the menu from data
+        function displayMenu(menuItems) {
+            menuLoading.style.display = 'none';
+            menuError.style.display = 'none';
+            menuItemsContainer.innerHTML = ''; // Clear previous content
+
+            if (menuItems && menuItems.length > 0) {
+                menuItems.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'bg-yellow-50 p-4 rounded-md shadow-sm';
+                    itemDiv.innerHTML = `
+                        <h3 class="text-xl font-semibold text-brown mb-1">${item['Product Name']}</h3>
+                        <p class="text-lg text-yellow-700 font-medium mb-2">${item['Price']}</p>
+                        <p class="text-gray-700">${item['Description']}</p>
+                    `;
+                    menuItemsContainer.appendChild(itemDiv);
+                });
+            } else {
+                menuItemsContainer.innerHTML = '<p class="text-center text-gray-500">No menu items found.</p>';
+            }
+        }
+        
+        // Show the initial page and start prefetching the menu
+        document.addEventListener('DOMContentLoaded', () => {
+            const hash = window.location.hash.substring(1);
+            const initialPageId = (hash === 'menu' || hash === 'showcase') ? hash : 'order';
+            const initialLink = document.querySelector(`.nav-link[href="#${initialPageId}"]`);
+            showPage(initialPageId, initialLink);
+            document.getElementById('currentYear').textContent = new Date().getFullYear();
+            
+            // Start fetching menu data in the background
+            prefetchMenu();
+        });
 
         // A more robust CSV parser that handles commas within quoted fields
         function parseCSV(csv) {
             const lines = csv.trim().split('\n');
             if (lines.length === 0) return [];
 
-            // Regex to split by comma, but not if the comma is inside double quotes
             const csvSplitRegex = /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
 
-            // Helper function to clean up each value
             const cleanValue = (value) => {
                 let cleaned = value.trim();
-                // If the value is quoted, remove the outer quotes
                 if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
                     cleaned = cleaned.substring(1, cleaned.length - 1);
                 }
-                // Replace escaped double quotes ("") with a single double quote (")
                 return cleaned.replace(/""/g, '"');
             };
 
@@ -355,9 +372,7 @@
             const data = [];
 
             for (let i = 1; i < lines.length; i++) {
-                // Skip empty lines
                 if (lines[i].trim() === '') continue;
-                
                 const values = lines[i].split(csvSplitRegex).map(cleanValue);
                 if (values.length === headers.length) {
                     let item = {};
@@ -366,7 +381,6 @@
                     });
                     data.push(item);
                 } else {
-                    // Log the problematic line for debugging
                     console.warn(`Skipping malformed row ${i + 1}: Expected ${headers.length} columns, got ${values.length}. Line: "${lines[i]}"`);
                 }
             }
