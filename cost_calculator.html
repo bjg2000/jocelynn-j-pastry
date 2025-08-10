@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bakery Recipe Cost Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
+    <style>
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #eab308; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #ca8a04; }
+
+        /* General Styling */
+        .container {
+            @apply mx-auto px-4 py-8 max-w-6xl;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+        .input-field {
+            border: 1px solid #D1C4B3;
+            border-radius: 8px;
+            padding: 0.75rem 1rem;
+            transition: border-color 0.2s;
+        }
+        .input-field:focus {
+            outline: none;
+            border-color: #ca8a04;
+            box-shadow: 0 0 0 3px rgba(202, 138, 4, 0.2);
+        }
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            @apply transition duration-300 ease-in-out transform hover:scale-105;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background-color: #ca8a04;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #b45309;
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+        .message-box {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: none; /* Hidden by default */
+        }
+        .message-box.success { background-color: #E6F7ED; color: #388E3C; border: 1px solid #81C784; }
+        .message-box.error { background-color: #FCE4EC; color: #C62828; border: 1px solid #EF9A9A; }
+        .loading-spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #ca8a04;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+            display: none; /* Hidden by default */
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        cream: '#FFF8DC',
+                        brown: { light: '#D2B48C', DEFAULT: '#8B4513', dark: '#5C2E14' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-cream font-sans text-brown-dark antialiased p-4 sm:p-6 lg:p-8">
+
+    <!-- Password Modal -->
+    <div id="passwordModal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+        <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-sm">
+            <h2 class="text-2xl font-bold text-brown-dark mb-4">Authentication Required</h2>
+            <p class="text-gray-600 mb-6">Please enter the password to unlock the calculator.</p>
+            <input type="password" id="passwordInput" class="input-field w-full mb-4" placeholder="Enter password">
+            <button id="submitPasswordBtn" class="btn btn-primary w-full">Unlock</button>
+            <div id="passwordError" class="text-red-600 text-sm mt-4 h-4"></div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="container hidden">
+        <h1 class="text-4xl md:text-5xl font-bold text-brown-dark text-center mb-6">Bakery Recipe Cost Calculator</h1>
+
+        <div id="messageBox" class="message-box"></div>
+        <div id="loadingSpinner" class="loading-spinner mx-auto my-4"></div>
+
+        <section class="mb-8 p-6 bg-white rounded-lg shadow-md transition duration-300 hover:shadow-xl">
+            <h2 class="text-2xl font-semibold text-brown-dark border-b border-yellow-500 pb-2 mb-4">Upload Recipe File (CSV, PDF, TXT)</h2>
+            <div class="flex flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-4">
+                <input type="file" id="recipeFileInput" accept=".csv, .pdf, .txt" class="input-field flex-grow cursor-pointer">
+                <button id="uploadRecipeBtn" class="btn btn-primary w-full sm:w-auto">Upload & Calculate</button>
+            </div>
+            <p class="text-sm text-gray-600 mt-2">
+                Upload a recipe file. The AI will calculate the total cost based on the provided cost sheet.
+            </p>
+        </section>
+
+        <section class="p-6 bg-white rounded-lg shadow-md transition duration-300 hover:shadow-xl">
+            <h2 class="text-2xl font-semibold text-brown-dark mb-4">Recipe Cost</h2>
+            <div class="text-xl font-bold text-brown-dark">
+                Total Estimated Cost: <span id="totalCostDisplay" class="text-yellow-700">$0.00</span>
+            </div>
+            <div id="breakdownDisplay" class="mt-4 text-gray-700">
+                <h3 class="text-lg font-semibold text-brown-dark mb-2">Cost Breakdown:</h3>
+                <ul id="costBreakdownList" class="list-disc list-inside"></ul>
+            </div>
+            <div id="missingIngredientsDisplay" class="mt-4 text-red-700 font-medium">
+                <h3 class="text-lg font-semibold text-brown-dark mb-2">Missing Ingredients:</h3>
+                <ul id="missingIngredientsList" class="list-disc list-inside"></ul>
+            </div>
+        </section>
+    </div>
+
+    <script type="module">
+        // --- CONFIGURATION ---
+        const ENCRYPTED_API_KEY = "U2FsdGVkX18dyGDHbwLEOfalQyuVNbfFR7rjBPsfI9fl3WAPTG2VyH7eQAifRvhKZlsyqiqS+T74P7AurN9eyg==";
+        const INGREDIENT_COSTS_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR-Hd5zXEs1y5Xz4_IkL7MzZy8dcxd8b-uwvuo_naeLLxuXBLwKwGsx1-iqHw726g/pub?gid=1503665748&single=true&output=csv";
+        const PASSWORD_STORAGE_KEY = 'bakery_cost_calculator_password';
+
+        // --- STATE ---
+        let decryptedApiKey = null;
+
+        // --- DOM ELEMENTS ---
+        const passwordModal = document.getElementById('passwordModal');
+        const mainContent = document.getElementById('mainContent');
+        const passwordInput = document.getElementById('passwordInput');
+        const submitPasswordBtn = document.getElementById('submitPasswordBtn');
+        const passwordError = document.getElementById('passwordError');
+        
+        const recipeFileInput = document.getElementById('recipeFileInput');
+        const uploadRecipeBtn = document.getElementById('uploadRecipeBtn');
+        const totalCostDisplay = document.getElementById('totalCostDisplay');
+        const costBreakdownList = document.getElementById('costBreakdownList');
+        const missingIngredientsList = document.getElementById('missingIngredientsList');
+        const messageBox = document.getElementById('messageBox');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+
+        // --- AUTHENTICATION & DECRYPTION ---
+
+        function decryptKey(password) {
+            try {
+                const bytes = CryptoJS.AES.decrypt(ENCRYPTED_API_KEY, password);
+                const originalText = bytes.toString(CryptoJS.enc.Utf8);
+                return (originalText && originalText.startsWith('AIza')) ? originalText : null;
+            } catch (e) {
+                console.error("Decryption failed:", e);
+                return null;
+            }
+        }
+
+        function handlePasswordSubmit() {
+            const password = passwordInput.value;
+            passwordError.textContent = '';
+            const key = decryptKey(password);
+
+            if (key) {
+                decryptedApiKey = key;
+                localStorage.setItem(PASSWORD_STORAGE_KEY, password);
+                passwordModal.classList.add('hidden');
+                mainContent.classList.remove('hidden');
+            } else {
+                passwordError.textContent = 'Invalid password. Please try again.';
+            }
+        }
+
+        function initializeAuth() {
+            const storedPassword = localStorage.getItem(PASSWORD_STORAGE_KEY);
+            if (storedPassword) {
+                const key = decryptKey(storedPassword);
+                if (key) {
+                    decryptedApiKey = key;
+                    passwordModal.classList.add('hidden');
+                    mainContent.classList.remove('hidden');
+                    return;
+                }
+                localStorage.removeItem(PASSWORD_STORAGE_KEY);
+            }
+        }
+
+        // --- UI & DISPLAY ---
+
+        function showMessage(message, type) {
+            messageBox.textContent = message;
+            messageBox.className = `message-box ${type} block`;
+            setTimeout(() => { messageBox.className = 'message-box'; }, 5000);
+        }
+
+        function showLoading(show) {
+            loadingSpinner.style.display = show ? 'block' : 'none';
+        }
+
+        // --- CALCULATION & DISPLAY LOGIC ---
+        
+        /**
+         * Calculates costs from AI-processed data and updates the UI.
+         * @param {Array<object>} processedIngredients - Array of ingredient data from the AI.
+         */
+        function calculateAndDisplayResults(processedIngredients) {
+            let totalCost = 0;
+            const breakdownItems = [];
+            const missingItems = [];
+
+            costBreakdownList.innerHTML = '';
+            missingIngredientsList.innerHTML = '';
+
+            if (!processedIngredients || processedIngredients.length === 0) {
+                totalCostDisplay.textContent = '$0.00';
+                showMessage('AI did not return any ingredients to process.', 'error');
+                return;
+            }
+
+            processedIngredients.forEach(item => {
+                const name = item.recipeIngredientName;
+                const qty = item.originalRecipeQuantity;
+                const unit = item.originalRecipeUnit;
+
+                if (item.status === 'free_item') {
+                    breakdownItems.push(`${name}: $0.00 (Free item)`);
+                } else {
+                    const convertedQty = parseFloat(item.convertedQuantityForCosting);
+                    const costPerUnit = parseFloat(item.costPerUnit);
+                    
+                    if (item.status === 'matched' && !isNaN(convertedQty) && !isNaN(costPerUnit)) {
+                        const itemCost = convertedQty * costPerUnit;
+                        totalCost += itemCost;
+                        breakdownItems.push(`${name} (${qty} ${unit}): $${itemCost.toFixed(2)}`);
+                    } else {
+                        missingItems.push(`${name} (${qty} ${unit})`);
+                    }
+                }
+            });
+
+            totalCostDisplay.textContent = `$${totalCost.toFixed(2)}`;
+
+            if (breakdownItems.length > 0) {
+                breakdownItems.forEach(text => {
+                    const li = document.createElement('li');
+                    li.textContent = text;
+                    costBreakdownList.appendChild(li);
+                });
+            } else {
+                costBreakdownList.innerHTML = '<li>No cost breakdown available.</li>';
+            }
+
+            if (missingItems.length > 0) {
+                missingItems.forEach(text => {
+                    const li = document.createElement('li');
+                    li.textContent = text;
+                    missingIngredientsList.appendChild(li);
+                });
+                showMessage('Calculation complete, but some ingredients were missing.', 'error');
+            } else {
+                missingIngredientsList.innerHTML = '<li>None</li>';
+                showMessage('Cost calculated successfully!', 'success');
+            }
+        }
+
+
+        // --- FILE & API HANDLING ---
+
+        function readFileAsBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = (error) => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        function readFileAsText(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = (error) => reject(error);
+                reader.readAsText(file);
+            });
+        }
+
+        async function handleUploadAndCalculate() {
+            if (!decryptedApiKey) {
+                showMessage('Authentication error. Please reload and enter the password.', 'error');
+                return;
+            }
+
+            const recipeFile = recipeFileInput.files[0];
+            if (!recipeFile) {
+                showMessage('Please select a recipe file to upload.', 'error');
+                return;
+            }
+
+            showLoading(true);
+            showMessage('Processing recipe, please wait...', 'success');
+
+            try {
+                let recipeParts = [];
+                if (recipeFile.type.startsWith('text/') || recipeFile.type === 'application/csv') {
+                    const textContent = await readFileAsText(recipeFile);
+                    recipeParts.push({ text: textContent });
+                } else if (recipeFile.type === 'application/pdf') {
+                    const base64Content = await readFileAsBase64(recipeFile);
+                    recipeParts.push({ inlineData: { mimeType: recipeFile.type, data: base64Content } });
+                } else {
+                    throw new Error('Unsupported file type. Please use TXT, CSV, or PDF.');
+                }
+
+                const costSheetResponse = await fetch(INGREDIENT_COSTS_URL);
+                if (!costSheetResponse.ok) throw new Error(`Failed to fetch cost sheet: ${costSheetResponse.statusText}`);
+                const costSheetCsvText = await costSheetResponse.text();
+
+                const prompt = `
+                    You are a data extraction and conversion expert for a bakery. Your task is to parse a recipe and a cost sheet, match ingredients, convert units, and return the raw data for calculation. DO NOT perform the final cost calculation yourself.
+
+                    **Critical Instructions:**
+
+                    1.  **Parse Cost Sheet:** Analyze the 'Cost Sheet CSV'. Extract the ingredient name, its cost, and the unit for that cost.
+                    2.  **Parse Recipe:** Analyze the 'Recipe Content'. Extract each ingredient's name, quantity, and unit.
+                    3.  **Intelligent Matching (Updated):** Match recipe ingredients to the cost sheet using a multi-step process:
+                        - **Step A: Exact Match.** First, look for an exact match between the recipe ingredient name and the cost sheet ingredient name.
+                        - **Step B: Broaden the Search (but not too much).** If no exact match is found, try a more general match by removing descriptive words (e.g., "semi sweet," "light," "unsalted," "crushed"). For example, "Semi Sweet Chocolate Chips" should match "Chocolate Chips."
+                        - **Step C: Avoid Overly Vague Matches.** Do not broaden the search to a point where different products could be confused. For example, "Semi Sweet Chocolate Chips" should NOT be matched to just "Chocolate." This prevents mismatches with things like "White Chocolate" or "Baking Chocolate."
+                    4.  **Unit Conversion:** Convert the recipe quantity to the same unit as the cost sheet entry (e.g., convert 'cups' of flour to 'grams' if the cost is per gram).
+                    5.  **Free Items:** If an ingredient is 'water' or 'h2o', mark its status as 'free_item'.
+                    6.  **Final Output:** Return ONLY a single JSON object containing an array named 'processedIngredients'. Do not include any other text or explanations.
+                    7.  **Numerical Values:** Ensure that 'convertedQuantityForCosting' and 'costPerUnit' are returned as proper numerical values (e.g., 125.5), not as strings (e.g., "125.5").
+
+                    **JSON Object Structure for EACH item in the 'processedIngredients' array:**
+                    {
+                      "recipeIngredientName": "The original name from the recipe.",
+                      "originalRecipeQuantity": "The original quantity from the recipe.",
+                      "originalRecipeUnit": "The original unit from the recipe.",
+                      "status": "'matched', 'not_found', or 'free_item'.",
+                      "convertedQuantityForCosting": "The recipe quantity CONVERTED to the cost sheet unit. Null if not matched.",
+                      "costPerUnit": "The cost per unit from the cost sheet. Null if not matched.",
+                      "costUnit": "The unit for the cost from the cost sheet. Null if not matched."
+                    }
+
+                    --- Cost Sheet CSV ---
+                    ${costSheetCsvText}
+
+                    --- Recipe Content ---
+                `;
+
+                const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${decryptedApiKey}`;
+                const payload = {
+                    contents: [{ role: "user", parts: [{ text: prompt }, ...recipeParts] }],
+                    generationConfig: { responseMimeType: "application/json" }
+                };
+
+                const apiResponse = await fetch(GEMINI_API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!apiResponse.ok) {
+                    const errorText = await apiResponse.text();
+                    throw new Error(`API Error: ${apiResponse.status} - ${errorText}`);
+                }
+
+                const result = await apiResponse.json();
+                
+                if (result.candidates && result.candidates[0].content.parts[0].text) {
+                    try {
+                        const resultJson = result.candidates[0].content.parts[0].text;
+                        const resultData = JSON.parse(resultJson);
+                        
+                        if (resultData.processedIngredients) {
+                            calculateAndDisplayResults(resultData.processedIngredients);
+                        } else {
+                            throw new Error("AI response did not contain 'processedIngredients' array.");
+                        }
+                    } catch (e) {
+                        console.error('JSON Parsing Error:', e);
+                        throw new Error("The AI returned an invalid JSON response.");
+                    }
+                } else {
+                    throw new Error("The AI returned an empty or invalid response.");
+                }
+
+            } catch (error) {
+                console.error('Calculation Error:', error);
+                showMessage(`An error occurred: ${error.message}`, 'error');
+                calculateAndDisplayResults([]); // Clear results on error
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // --- EVENT LISTENERS ---
+        submitPasswordBtn.addEventListener('click', handlePasswordSubmit);
+        passwordInput.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') handlePasswordSubmit();
+        });
+        uploadRecipeBtn.addEventListener('click', handleUploadAndCalculate);
+
+        // --- INITIALIZATION ---
+        initializeAuth();
+
+    </script>
+</body>
+</html>
